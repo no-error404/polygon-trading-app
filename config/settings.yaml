@@ -1,0 +1,75 @@
+# ============================================================================
+# Polymarket Weather Trader — Global Settings
+# ============================================================================
+# This file holds trading parameters and API endpoints.
+# NO SECRES HERE — private key / API creds go in credentials.yaml (gitignored).
+# ============================================================================
+
+# --- API endpoints (all public, no auth needed for reads) ---
+apis:
+  gamma: "https://gamma-api.polymarket.com"
+  clob:  "https://clob.polymarket.com"
+  data:  "https://data-api.polymarket.com"
+  open_meteo: "https://api.open-meteo.com/v1/forecast"
+  open_meteo_ensemble: "https://ensemble-api.open-meteo.com/v1/ensemble"
+
+# --- Weather models to query (multi-model consensus) ---
+# Reduced from 6 to 3 to stay under Open-Meteo free-tier rate limits.
+# 6 models x ~20 markets every 300s = ~120 requests/cycle → 429 storm.
+# 3 models with TTL cache = ~30 unique requests/cycle (highest+lowest share stations).
+weather_models:
+  - gfs_seamless       # NOAA GFS, global, medium range
+  - ecmwf_ifs025       # European ECMWF, best 3-7d skill (0.25° resolution)
+  - icon_seamless      # German ICON, global
+
+# --- Trading parameters ---
+trading:
+  deposit_wallet: "0x157F0453492B326DC3E995DC3C898768184Ee6d9"  # Polymarket proxy wallet (holds USDC)
+  bankroll_usdc: 50.00            # soak-test bankroll — tiny to start
+  kelly_fraction: 0.25            # quarter-Kelly
+  single_market_cap: 0.05         # max 5% of bankroll on one market
+  aggregate_cap: 0.25             # max 25% of bankroll in open weather positions
+  ev_threshold: 0.03              # skip trades with EV < $0.03/share (noise filter)
+  limit_price_fraction: 0.97      # limit = 97% of ask (tighter than model_p - ev_threshold)
+  max_hours_to_resolution: 12    # only trade markets resolving within this many hours
+  min_ask_depth_shares: 50        # skip if fewer than this many shares available at or below our limit price (liquidity gate)
+  p_model_clip_min: 0.01          # clip p_model to prevent Kelly div-by-zero
+  p_model_clip_max: 0.99
+  min_ensemble_runs: 30           # shrink to uniform if fewer runs than this
+  max_slippage_bps: 200           # max 2% slippage from mid to fill price
+  order_type: "GTC"               # GTC = good-til-cancelled (use GTD in production)
+  min_models: 2                   # skip trading if fewer than this many forecast models succeed
+
+# --- Soak test settings ---
+soak:
+  poll_interval_seconds: 300      # 5 minutes between cycles
+  dry_run: true                   # true = compute everything, send NO orders
+  max_cycles: 0                   # 0 = run forever (kill manually)
+  log_path: "logs/soak_audit.jsonl"
+
+# --- Event discovery ---
+discovery:
+  # /public-search caps at ~5 results per query, so generic terms like
+  # "temperature" return stale markets. Use specific, high-signal queries.
+  # Date-aware queries are injected at runtime (see gamma_client.py).
+  search_queries:
+    - "highest temperature"
+    - "july temperature"
+    - "snowfall"
+    - "rainfall"
+    - "wind speed"
+    - "humidity"
+  poll_interval_seconds: 600      # check for new markets every 10 min
+  min_event_volume: 5000          # skip events with < $5K volume (too thin)
+
+# --- Risk management ---
+risk:
+  drawdown_kill_pct: 0.08         # kill switch: 8% drawdown in 24h
+  max_consecutive_rejections: 3   # kill switch: 3 rejected orders in a row
+  max_api_failures: 3             # kill switch: Gamma/CLOB unreachable N cycles
+  reconcile_bankroll_every_n_cycles: 12  # check on-chain USDC balance hourly
+
+# --- Network ---
+network:
+  chain_id: 137                   # Polygon mainnet
+  rpc_url: "https://polygon-rpc.com"

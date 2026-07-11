@@ -1,0 +1,19 @@
+# Secrets — NEVER commit
+config/credentials.yaml
+config/credentials.yaml.bak.*
+*.bak*
+.env
+.env.*
+
+# Logs
+logs/*.log
+logs/*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Backups
+*.backup.*

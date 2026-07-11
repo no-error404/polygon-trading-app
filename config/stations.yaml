@@ -1,0 +1,282 @@
+# ============================================================================
+# Station Lookup Table — ICAO code to coordinates and metadata
+# ============================================================================
+# CRITICAL: Polymarket weather markets resolve against a NAMED AIRPORT STATION
+# via Wunderground history, NOT a city centroid. The station is parsed from
+# the market description text (e.g. "LaGuardia Airport Station" → KLGA).
+#
+# This table maps ICAO codes to their exact coordinates for forecast queries.
+# Coordinates are the official station locations, NOT city centres.
+# ============================================================================
+
+stations:
+  # --- US stations (Fahrenheit) ---
+  KLGA:
+    name: "LaGuardia Airport"
+    city: "New York City"
+    country: "US"
+    lat: 40.777
+    lon: -73.873
+    elevation_m: 6
+    units: "F"
+    wunderground_path: "us/ny/new-york-city/KLGA"
+
+  KJFK:
+    name: "John F Kennedy Intl Airport"
+    city: "New York City"
+    country: "US"
+    lat: 40.640
+    lon: -73.782
+    elevation_m: 4
+    units: "F"
+    wunderground_path: "us/ny/new-york-city/KJFK"
+
+  KORD:
+    name: "Chicago O'Hare Intl Airport"
+    city: "Chicago"
+    country: "US"
+    lat: 41.960
+    lon: -87.910
+    elevation_m: 205
+    units: "F"
+    wunderground_path: "us/il/chicago/KORD"
+
+  KDEN:
+    name: "Denver Intl Airport"
+    city: "Denver"
+    country: "US"
+    lat: 39.856
+    lon: -104.847
+    elevation_m: 1625
+    units: "F"
+    wunderground_path: "us/co/denver/KDEN"
+
+  KLAX:
+    name: "Los Angeles Intl Airport"
+    city: "Los Angeles"
+    country: "US"
+    lat: 33.938
+    lon: -118.389
+    elevation_m: 30
+    units: "F"
+    wunderground_path: "us/ca/los-angeles/KLAX"
+
+  # --- International stations (Celsius) ---
+  RKSI:
+    name: "Incheon Intl Airport"
+    city: "Seoul"
+    country: "KR"
+    lat: 37.460
+    lon: 126.440
+    elevation_m: 7
+    units: "C"
+    wunderground_path: "kr/incheon/RKSI"
+
+  LFPO:
+    name: "Paris Orly Airport"
+    city: "Paris"
+    country: "FR"
+    lat: 48.723
+    lon: 2.379
+    elevation_m: 89
+    units: "C"
+    wunderground_path: "fr/paris/LFPO"
+
+  LFPG:
+    name: "Paris Charles de Gaulle Airport"
+    city: "Paris"
+    country: "FR"
+    lat: 49.003
+    lon: 2.571
+    elevation_m: 109
+    units: "C"
+    wunderground_path: "fr/paris/LFPG"
+
+  EGLL:
+    name: "London Heathrow Airport"
+    city: "London"
+    country: "GB"
+    lat: 51.470
+    lon: -0.454
+    elevation_m: 25
+    units: "C"
+    wunderground_path: "uk/london/EGLL"
+
+  RJTT:
+    name: "Tokyo Haneda Airport"
+    city: "Tokyo"
+    country: "JP"
+    lat: 35.549
+    lon: 139.780
+    elevation_m: 6
+    units: "C"
+    wunderground_path: "jp/tokyo/RJTT"
+
+  ZSPD:
+    name: "Shanghai Pudong Intl Airport"
+    city: "Shanghai"
+    country: "CN"
+    lat: 31.144
+    lon: 121.808
+    elevation_m: 4
+    units: "C"
+    wunderground_path: "cn/shanghai/ZSPD"
+
+  ZGSZ:
+    name: "Shenzhen Bao'an Intl Airport"
+    city: "Shenzhen"
+    country: "CN"
+    lat: 22.639
+    lon: 113.811
+    elevation_m: 4
+    units: "C"
+    wunderground_path: "cn/shenzhen/ZGSZ"
+
+  # Hong Kong — market resolves against Hong Kong Observatory (HKO HQ, not airport)
+  VHHH:
+    name: "Hong Kong Observatory"
+    city: "Hong Kong"
+    country: "HK"
+    lat: 22.303
+    lon: 114.174
+    elevation_m: 131
+    units: "C"
+    wunderground_path: "hk/hong-kong/VHHH"
+
+  # Mt. Washington Observatory (wind speed markets, summit station)
+  KMWN:
+    name: "Mount Washington Observatory"
+    city: "Mount Washington"
+    country: "US"
+    lat: 44.270
+    lon: -71.303
+    elevation_m: 1910
+    units: "F"
+    wunderground_path: "us/nh/mount-washington/KMWN"
+
+  RCSS:
+    name: "Taipei Songshan Airport"
+    city: "Taipei"
+    country: "TW"
+    lat: 25.070
+    lon: 121.552
+    elevation_m: 6
+    units: "C"
+    wunderground_path: "tw/taipei/RCSS"
+
+  EGLC:
+    name: "London City Airport"
+    city: "London"
+    country: "GB"
+    lat: 51.505
+    lon: 0.055
+    elevation_m: 6
+    units: "C"
+    wunderground_path: "gb/london/EGLC"
+
+  NZWN:
+    name: "Wellington Intl Airport"
+    city: "Wellington"
+    country: "NZ"
+    lat: -41.327
+    lon: 174.805
+    elevation_m: 12
+    units: "C"
+    wunderground_path: "nz/wellington/NZWN"
+
+  KMIA:
+    name: "Miami Intl Airport"
+    city: "Miami"
+    country: "US"
+    lat: 25.796
+    lon: -80.290
+    elevation_m: 9
+    units: "F"
+    wunderground_path: "us/fl/miami/KMIA"
+
+  LFPB:
+    name: "Paris-Le Bourget Airport"
+    city: "Paris"
+    country: "FR"
+    lat: 49.006
+    lon: 2.437
+    elevation_m: 67
+    units: "C"
+    wunderground_path: "fr/bonneuil-en-france/LFPB"
+
+# --- Description keyword → ICAO mapping (for parsing market descriptions) ---
+# The station_lookup module tries to match keywords from the market
+# description against this table. Order matters — more specific first.
+description_keywords:
+  - keyword: "LaGuardia"
+    icao: "KLGA"
+  - keyword: "LGA"
+    icao: "KLGA"
+  - keyword: "JFK"
+    icao: "KJFK"
+  - keyword: "O'Hare"
+    icao: "KORD"
+  - keyword: "ORD"
+    icao: "KORD"
+  - keyword: "Haneda"
+    icao: "RJTT"
+  - keyword: "RJTT"
+    icao: "RJTT"
+  - keyword: "Pudong"
+    icao: "ZSPD"
+  - keyword: "ZSPD"
+    icao: "ZSPD"
+  - keyword: "Bao'an"
+    icao: "ZGSZ"
+  - keyword: "ZGSZ"
+    icao: "ZGSZ"
+  - keyword: "Hong Kong Observatory"
+    icao: "VHHH"
+  - keyword: "VHHH"
+    icao: "VHHH"
+  - keyword: "Mt. Washington"
+    icao: "KMWN"
+  - keyword: "Mount Washington"
+    icao: "KMWN"
+  - keyword: "KMWN"
+    icao: "KMWN"
+  - keyword: "Songshan"
+    icao: "RCSS"
+  - keyword: "RCSS"
+    icao: "RCSS"
+  - keyword: "London City Airport"
+    icao: "EGLC"
+  - keyword: "EGLC"
+    icao: "EGLC"
+  - keyword: "Wellington Intl"
+    icao: "NZWN"
+  - keyword: "NZWN"
+    icao: "NZWN"
+  - keyword: "Miami Intl"
+    icao: "KMIA"
+  - keyword: "KMIA"
+    icao: "KMIA"
+  - keyword: "Le Bourget"
+    icao: "LFPB"
+  - keyword: "LFPB"
+    icao: "LFPB"
+  - keyword: "Denver Intl"
+    icao: "KDEN"
+  - keyword: "DEN"
+    icao: "KDEN"
+  - keyword: "LAX"
+    icao: "KLAX"
+  - keyword: "Los Angeles Intl"
+    icao: "KLAX"
+  - keyword: "Incheon"
+    icao: "RKSI"
+  - keyword: "RKSI"
+    icao: "RKSI"
+  - keyword: "Orly"
+    icao: "LFPO"
+  - keyword: "Charles de Gaulle"
+    icao: "LFPG"
+  - keyword: "CDG"
+    icao: "LFPG"
+  - keyword: "Heathrow"
+    icao: "EGLL"

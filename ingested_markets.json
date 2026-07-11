@@ -1,0 +1,114 @@
+{
+  "ingest_date": "2026-07-06",
+  "source": "gamma-api.polymarket.com",
+  "query_terms": ["temperature", "weather", "snow", "rainfall", "space weather"],
+  "total_unique_events": 22,
+  "genuine_weather_events": [
+    {
+      "title": "Highest temperature in NYC on April 16?",
+      "slug": "highest-temperature-in-nyc-on-april-16-2026",
+      "volume": 483105.75,
+      "closed": true,
+      "markets": 11,
+      "station": "LaGuardia Airport",
+      "icao": "KLGA",
+      "resolution_source": "wunderground.com/history/daily/us/ny/new-york-city/KLGA",
+      "units": "F",
+      "buckets": ["<=77", "78-79", "80-81", "82-83", "84-85", "86-87", "88-89", "90-91", "92-93", "94-95", ">=96"],
+      "winning_bucket": "86-87"
+    },
+    {
+      "title": "Highest temperature in Seoul on April 17?",
+      "slug": "highest-temperature-in-seoul-on-april-17-2026",
+      "volume": 758417.59,
+      "closed": true,
+      "markets": 11,
+      "station": "Incheon Intl Airport",
+      "icao": "RKSI",
+      "resolution_source": "wunderground.com/history/daily/kr/incheon/RKSI",
+      "units": "C",
+      "buckets": ["<=8", "9", "10", "11", "12", "13", "14", "15", "16", "17", ">=18"]
+    },
+    {
+      "title": "Highest temperature in Paris on April 16?",
+      "slug": "highest-temperature-in-paris-on-april-16-2026",
+      "volume": 679419.32,
+      "closed": true,
+      "markets": 11,
+      "units": "C"
+    },
+    {
+      "title": "Highest temperature in Paris on April 15?",
+      "slug": "highest-temperature-in-paris-on-april-15-2026",
+      "volume": 590527.37,
+      "closed": true,
+      "markets": 11,
+      "units": "C"
+    },
+    {
+      "title": "How many inches of snow in NYC this weekend? (Jan 24-26)",
+      "slug": "how-many-inches-of-snow-in-nyc-this-weekend-jan-24-26",
+      "volume": 1447817.57,
+      "closed": true,
+      "markets": 7
+    },
+    {
+      "title": "How many inches of snow in NYC this weekend? (Feb 21-23)",
+      "slug": "how-many-inches-of-snow-in-nyc-this-weekend-february-21-23",
+      "volume": 22715.70,
+      "closed": true,
+      "markets": 7
+    },
+    {
+      "title": "How many major Space Weather events this week? (Apr 19-25)",
+      "slug": "how-many-major-space-weather-events-this-week-april-19-april-25",
+      "volume": 104903.92,
+      "closed": true,
+      "markets": 8
+    },
+    {
+      "title": "Major Space Weather event this week? (Mar 29-Apr 4)",
+      "slug": "major-space-weather-event-this-week-march-29-april-4",
+      "volume": 14760.40,
+      "closed": true,
+      "markets": 1
+    },
+    {
+      "title": "How many major Space Weather events this week? (Apr 26-May 2)",
+      "slug": "how-many-major-space-weather-events-this-week-april-26-may-2",
+      "volume": 13636.23,
+      "closed": true,
+      "markets": 7
+    },
+    {
+      "title": "How many major Space Weather events this week? (Apr 12-18)",
+      "slug": "how-many-major-space-weather-events-this-week-april-12-april-18",
+      "volume": 13088.20,
+      "closed": true,
+      "markets": 7
+    },
+    {
+      "title": "How many major Space Weather events this week? (Apr 5-11)",
+      "slug": "how-many-major-space-weather-events-this-week-april-5-april-11",
+      "volume": 9205.90,
+      "closed": true,
+      "markets": 7
+    }
+  ],
+  "non_weather_false_positives": [
+    "snow-quarterly-earnings (Snowflake SNOW ticker)",
+    "who-will-win-the-beast-games",
+    "louisiana-republican-senate-primary-winner-889",
+    "kentucky-democratic-senate-primary-winner",
+    "pll-2026-dave-pietramala-defensive-player-of-the-year"
+  ],
+  "active_weather_markets_at_ingest": 0,
+  "key_findings": {
+    "markets_are_episodic": true,
+    "resolution_oracle": "Wunderground station history (not raw METAR)",
+    "nyc_resolves_to": "KLGA (LaGuardia), NOT JFK/Central Park",
+    "bracket_structure_confirmed": "negative-risk multi-outcome, 11 buckets for temp, 7 for snow",
+    "per_bucket_liquidity_unknown": "requires CLOB /book query per token",
+    "international_markets_use_celsius": true
+  }
+}
