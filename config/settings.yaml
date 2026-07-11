@@ -25,7 +25,7 @@ weather_models:
 # --- Trading parameters ---
 trading:
   deposit_wallet: "0x157F0453492B326DC3E995DC3C898768184Ee6d9"  # Polymarket proxy wallet (holds USDC)
-  bankroll_usdc: 50.00            # soak-test bankroll — tiny to start
+  bankroll_usdc: 3.00             # updated to match current actual balance
   kelly_fraction: 0.25            # quarter-Kelly
   single_market_cap: 0.05         # max 5% of bankroll on one market
   aggregate_cap: 0.25             # max 25% of bankroll in open weather positions

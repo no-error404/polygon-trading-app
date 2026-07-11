@@ -29,8 +29,11 @@ Default bias for unknown stations: -1.1°C (overall average)
 from __future__ import annotations
 import logging
 import math
-from dataclasses import dataclass, field
+import json
+from dataclasses import dataclass, field, asdict
 from typing import Optional
+from pathlib import Path
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -105,6 +108,76 @@ class BiasCorrectedConfig:
         )
 
 
+# Path to persistent bias state
+BIAS_STATE_FILE = Path(__file__).resolve().parent.parent.parent / "config/bias_state.json"
+
+@dataclass
+class BiasState:
+    station_icao: str
+    cumulative_bias: float = 0.0
+    sample_count: int = 0
+    last_update: str = ""
+
+    @property
+    def mean_bias(self) -> float:
+        if self.sample_count == 0:
+            return DEFAULT_BIAS
+        return self.cumulative_bias / self.sample_count
+
+class BiasTracker:
+    def __init__(self, state_file: Path = BIAS_STATE_FILE):
+        self.state_file = state_file
+        self.biases: dict[str, BiasState] = {}
+        self.load()
+
+    def load(self):
+        if self.state_file.exists():
+            try:
+                with open(self.state_file) as f:
+                    data = json.load(f)
+                    for icao, d in data.items():
+                        self.biases[icao] = BiasState(**d)
+            except (json.JSONDecodeError, OSError, TypeError):
+                pass
+
+    def save(self):
+        try:
+            with open(self.state_file, "w") as f:
+                json.dump({icao: asdict(s) for icao, s in self.biases.items()}, f, indent=2)
+        except OSError as e:
+            logger.warning(f"Failed to save bias state: {e}")
+
+    def get_bias(self, station_icao: str) -> float:
+        if station_icao in self.biases:
+            return self.biases[station_icao].mean_bias
+        # Fallback to hardcoded table for known stations, then default
+        return STATION_BIAS.get(station_icao, DEFAULT_BIAS)
+
+    def record_observation(self, station_icao: str, actual: float, forecast_mean: float):
+        bias = actual - forecast_mean
+        if station_icao not in self.biases:
+            # Seed with current hardcoded bias to avoid starting from scratch
+            current_mean = STATION_BIAS.get(station_icao, DEFAULT_BIAS)
+            self.biases[station_icao] = BiasState(
+                station_icao=station_icao,
+                cumulative_bias=current_mean * 10, # give it some weight
+                sample_count=10,
+            )
+        
+        s = self.biases[station_icao]
+        # Exponential moving average would be better, but simple average is safer for n=2
+        # Use a weight of 0.2 for new samples
+        s.cumulative_bias += bias
+        s.sample_count += 1
+        s.last_update = datetime.now(timezone.utc).isoformat()
+        self.save()
+
+    def get_confidence(self, station_icao: str) -> float:
+        """Returns 0.0 to 1.0 based on sample count."""
+        count = self.biases[station_icao].sample_count if station_icao in self.biases else 0
+        if count >= 20: return 1.0
+        return count / 20.0
+
 def compute_bias_corrected_probabilities(
     model_temps: list[float],
     station_icao: str,
@@ -112,6 +185,7 @@ def compute_bias_corrected_probabilities(
     bucket_lows: list[float],
     bucket_highs: list[float],
     config: BiasCorrectedConfig,
+    bias_tracker: Optional[BiasTracker] = None,
 ) -> list[float]:
     """
     Compute per-bracket probabilities using bias-corrected model temps.
@@ -127,7 +201,8 @@ def compute_bias_corrected_probabilities(
     
     # Apply bias correction
     if config.use_station_bias:
-        adjusted_temps = adjust_temps(model_temps, station_icao)
+        bias = bias_tracker.get_bias(station_icao) if bias_tracker else get_station_bias(station_icao)
+        adjusted_temps = [t + bias for t in model_temps]
     else:
         adjusted_temps = model_temps
     
@@ -136,13 +211,22 @@ def compute_bias_corrected_probabilities(
     
     # Compute mean and stdev from adjusted temps
     mean = sum(adjusted_temps) / n_models
+    
+    # Uncertainty Adjustment:
+    # For small n (3 models), Normal distribution is overconfident.
+    # We broaden the stdev based on model disagreement.
     if n_models > 1:
         variance = sum((t - mean) ** 2 for t in adjusted_temps) / (n_models - 1)
         stdev = math.sqrt(variance)
     else:
         stdev = 1.0  # default uncertainty
-    if stdev < 0.3:
-        stdev = 0.3  # minimum spread to avoid overconfidence
+    
+    # Penalty for small ensemble size
+    if n_models < 5:
+        stdev *= (1.5 + (5 - n_models) * 0.2)
+    
+    if stdev < 0.5:
+        stdev = 0.5  # minimum spread to avoid overconfidence (increased from 0.3)
     
     # Compute bracket probabilities using Normal CDF
     probs = []
