@@ -137,6 +137,33 @@ class AuditLog:
         recent = lines[-n:] if len(lines) > n else lines
         return [json.loads(line) for line in recent if line.strip()]
 
+    def read_recent_by_type(self, event_type: str, cycle_num: int = 0, n: int = 0) -> list:
+        """
+        Read log entries filtered by type.
+
+        If cycle_num > 0, only return entries for that cycle.
+        If n > 0, limit to the last N matching entries.
+        """
+        if not self.log_path.exists():
+            return []
+        lines = self.log_path.read_text().strip().split("\n")
+        matching = []
+        for line in reversed(lines):
+            if not line.strip():
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if entry.get("type") != event_type:
+                continue
+            if cycle_num > 0 and entry.get("cycle") != cycle_num:
+                continue
+            matching.append(entry)
+            if n > 0 and len(matching) >= n:
+                break
+        return matching
+
 
 if __name__ == "__main__":
     print("Audit Log Self-Test")

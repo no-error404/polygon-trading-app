@@ -204,7 +204,7 @@ class ClobTrader:
         if order.side not in ("BUY", "SELL"): return TradeResult(success=False, error=f"Invalid side: {order.side}")
         if order.price < 0.001 or order.price > 0.999: return TradeResult(success=False, error=f"Price {order.price} out of range")
         if order.size < min_size: raise MinSizeError(f"Size {order.size} below minimum {min_size}")
-        
+
         self._check_tick_size(order.price, tick_size)
         if mid_price > 0: self._check_slippage(order.price, mid_price)
 
@@ -213,6 +213,18 @@ class ClobTrader:
 
         if dry_run:
             return TradeResult(success=True, status="DRY_RUN", raw_response={"mode": "dry_run"})
+
+        # --- LIVE-ONLY safety gate: enforce guardrail before real money ---
+        from src.risk.guardrail import GuardRail, LiveTradingBlockedError
+        try:
+            GuardRail().assert_can_trade_live(
+                dry_run_cycles_required=100,
+                min_orders_required=10,
+                max_errors_allowed=0,
+            )
+        except LiveTradingBlockedError as e:
+            logger.critical(f"LIVE ORDER BLOCKED: {e}")
+            return TradeResult(success=False, error=str(e), status="BLOCKED")
 
         try:
             order_args = OrderArgs(token_id=order.token_id, price=float(price_str), size=float(size_str), side=order.side)

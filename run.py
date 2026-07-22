@@ -273,6 +273,20 @@ def main():
     settings = load_settings()
     dry_run = not args.live
 
+    # --- GuardRail: block accidental live if not earned ---
+    if args.live:
+        from src.risk.guardrail import GuardRail, LiveTradingBlockedError
+        try:
+            GuardRail().assert_can_trade_live(
+                dry_run_cycles_required=100,
+                min_orders_required=10,
+                max_errors_allowed=0,
+            )
+        except LiveTradingBlockedError as e:
+            print(f"\n[GUARDRAIL] {e}")
+            print("Run dry-run first: python3 run.py --cycles 100")
+            return
+
     soak_settings = settings.get("soak", {})
     interval = args.interval if args.interval > 0 else soak_settings.get("poll_interval_seconds", 300)
     max_cycles = args.cycles if args.cycles > 0 else soak_settings.get("max_cycles", 0)
@@ -282,6 +296,7 @@ def main():
         log_path = log_path.replace(".jsonl", "_dryrun.jsonl")
 
     from src.risk.audit_log import AuditLog
+    from src.risk.guardrail import GuardRail
     audit = AuditLog(log_path)
 
     print("=" * 60)
@@ -297,9 +312,20 @@ def main():
     print("=" * 60)
 
     cycle = 1
+    guard = GuardRail()
     try:
         while True:
             run_cycle(cycle, settings, audit, dry_run)
+
+            # --- Update guardrail with every successful dry-run cycle ---
+            if dry_run:
+                # Count orders generated this cycle from audit log
+                orders_this_cycle = len(audit.read_recent_by_type("order", cycle))
+                errors_this_cycle = len(audit.read_recent_by_type("error", cycle))
+                guard.record_dry_run_cycle(
+                    orders_generated=orders_this_cycle,
+                    errors=errors_this_cycle,
+                )
 
             if max_cycles > 0 and cycle >= max_cycles:
                 print(f"\nReached max cycles ({max_cycles}). Stopping.")

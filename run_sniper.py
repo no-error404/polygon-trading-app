@@ -271,6 +271,8 @@ def main():
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--interval", type=int, default=300)
     parser.add_argument("--cycles", type=int, default=0)
+    parser.add_argument("--max-deployment", type=float, default=None,
+                        help="Max USDC to deploy per session")
     args = parser.parse_args()
 
     settings = load_settings()
@@ -291,6 +293,7 @@ def main():
     try:
         while True:
             run_sniper_cycle(cycle, settings, audit, not args.live, 
+                             max_deployment=args.max_deployment,
                              bankroll_mgr=bankroll_mgr, kill_switch=kill_switch, 
                              exposure_mgr=exposure_mgr, bias_tracker=bias_tracker)
             if args.cycles > 0 and cycle >= args.cycles:

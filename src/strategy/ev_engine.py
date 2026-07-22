@@ -30,9 +30,9 @@ class EVResult:
     p_market: float         # market's implied probability
 
 
-MIN_ASK_PRICE = 0.02  # don't buy anything below 2¢ — market correctly
-                       # prices these as near-impossible; sub-penny asks
-                       # create fake edge when p_model is inflated by shrinkage
+MIN_ASK_PRICE = 0.01  # lowered from 0.02 — weather books are thin;
+                       # 1¢ brackets can have genuine edge when the
+                       # ensemble disagrees with market consensus
 
 
 def compute_ev(

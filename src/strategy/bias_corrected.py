@@ -77,7 +77,7 @@ class BiasCorrectedConfig:
 
     # EV filter
     min_ev_per_share: float = 0.03
-    min_ask_price: float = 0.02  # don't buy below 2¢
+    min_ask_price: float = 0.01  # lowered — thin weather books
     
     # Liquidity
     min_ask_depth_shares: float = 50  # need 50+ shares at our price
@@ -98,7 +98,7 @@ class BiasCorrectedConfig:
         trading = settings.get("trading", {})
         return cls(
             min_ev_per_share=trading.get("ev_threshold", 0.03),
-            min_ask_price=0.02,
+            min_ask_price=0.01,
             min_ask_depth_shares=trading.get("min_ask_depth_shares", 50),
             kelly_fraction=trading.get("kelly_fraction", 0.25),
             max_single_market_fraction=trading.get("single_market_cap", 0.05),
