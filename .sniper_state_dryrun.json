@@ -1,8 +1,8 @@
 {
   "bought_keys": [
+    "EGLC:2026-07-12:29\u00b0C",
     "KLGA:2026-07-12:68-69\u00b0F",
-    "ZSPD:2026-07-12:32\u00b0C",
-    "EGLC:2026-07-12:29\u00b0C"
+    "ZSPD:2026-07-12:32\u00b0C"
   ],
   "cumulative_deployed": 0.637582,
   "live_cycles": 0
